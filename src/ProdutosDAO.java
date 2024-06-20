@@ -1,8 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-
 /**
  *
  * @author Adm
@@ -35,16 +30,31 @@ public class ProdutosDAO {
     }
     
     public void cadastrarProduto (ProdutosDTO produto){
-        
-        
-        //conn = new conectaDAO().connectDB();
-        
+        int status;
+        try{
+            prep = conn.prepareStatement("INSERT INTO produtos VALUES(?,?,?)");
+            prep.setString(1, produto.getNome());
+            prep.setInt(2, produto.getValor());
+            prep.setString(3, produto.getStatus());
+            status = prep.executeUpdate();
+            
+        }catch(SQLException ex){
+            System.out.println("Erro de conexão "+ ex.getMessage());
+        }
         
     }
     
     public ArrayList<ProdutosDTO> listarProdutos(){
         
         return listagem;
+    }
+    
+    public void desconectar(){
+        try{
+            conn.close();
+        }catch(SQLException ex){
+            
+        }
     }
     
     
