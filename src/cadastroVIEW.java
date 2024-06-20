@@ -1,12 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-
 /**
  *
  * @author Adm
  */
+import javax.swing.JOptionPane;
 public class cadastroVIEW extends javax.swing.JFrame {
 
     /**
@@ -141,16 +137,36 @@ public class cadastroVIEW extends javax.swing.JFrame {
 
     private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
         ProdutosDTO produto = new ProdutosDTO();
-        String nome = cadastroNome.getText();
-        String valor = cadastroValor.getText();
-        String status = "A Venda";
-        produto.setNome(nome);
-        produto.setValor(Integer.parseInt(valor));
-        produto.setStatus(status);
+        ProdutosDAO dao = new ProdutosDAO();
+        boolean status;
+        int resposta;
         
-        ProdutosDAO produtodao = new ProdutosDAO();
-        produtodao.cadastrarProduto(produto);
-        
+        produto.setNome(cadastroNome.getText());
+        try{
+            int valor = Integer.parseInt(cadastroValor.getText());
+            produto.setValor(valor);
+        }catch(NumberFormatException e){
+            System.out.println("Valor inserido não é um número válido");
+        }
+        dao = new ProdutosDAO();
+        status = dao.conectar();
+        if(status == false){
+            JOptionPane.showMessageDialog(null, "Erro de conexão com o banco de dados");
+        }else{
+            resposta = dao.cadastrarProduto(produto);
+            if(resposta == 1){
+                JOptionPane.showMessageDialog(null, "Produto salvo com sucesso");
+                cadastroNome.setText("");
+                cadastroValor.setText("");
+                cadastroNome.requestFocus();
+            }else if(resposta == 1062){
+                JOptionPane.showMessageDialog(null, "Produto já cadastrado");
+            }else{
+                JOptionPane.showMessageDialog(null, "Erro ao inserir produtos");
+            }
+            dao.desconectar();
+            
+        }
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
     private void btnProdutosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdutosActionPerformed

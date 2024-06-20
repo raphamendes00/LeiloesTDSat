@@ -29,17 +29,17 @@ public class ProdutosDAO {
         }
     }
     
-    public void cadastrarProduto (ProdutosDTO produto){
+    public int cadastrarProduto (ProdutosDTO produto){
         int status;
         try{
-            prep = conn.prepareStatement("INSERT INTO produtos VALUES(?,?,?)");
+            prep = conn.prepareStatement("INSERT INTO produtos (nome,valor) VALUES (?,?)");
             prep.setString(1, produto.getNome());
             prep.setInt(2, produto.getValor());
-            prep.setString(3, produto.getStatus());
             status = prep.executeUpdate();
-            
+            return status;
         }catch(SQLException ex){
             System.out.println("Erro de conexão "+ ex.getMessage());
+            return ex.getErrorCode();
         }
         
     }
