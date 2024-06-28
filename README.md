@@ -1,4 +1,4 @@
-# Gerenciador de Biblioteca de Filmes
+# Gerenciador de casa de leilões
 
 Este é um aplicativo desktop em Java para gerenciamento de uma casa de leilões. O projeto permite cadastrar, consultar, vender e consultar vendas, além de listar todos os produtos armazenados.
 
