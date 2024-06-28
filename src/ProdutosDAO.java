@@ -21,7 +21,7 @@ public class ProdutosDAO {
     public boolean conectar(){
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/uc_11","root","metalend");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/uc_11?useSSL=false","root","metalend");
             return true;
         }catch(ClassNotFoundException | SQLException ex){
             System.out.println("Erro ao conectar: " + ex.getMessage());
@@ -44,10 +44,49 @@ public class ProdutosDAO {
         
     }
     
-    public ArrayList<ProdutosDTO> listarProdutos(){
-        
-        return listagem;
+    public ProdutosDTO consultar(int id){
+        ProdutosDTO produtos = null;
+        try{
+            produtos = new ProdutosDTO();
+            prep = conn.prepareStatement("SELECT * FROM produtos WHERE id = ?");
+            prep.setInt(1, id);
+            resultset = prep.executeQuery();
+            
+            if(resultset.next()){
+                produtos.setId(resultset.getInt("id"));
+                produtos.setNome(resultset.getString("nome"));
+                produtos.setValor(resultset.getInt("valor"));
+                produtos.setStatus(resultset.getString("status"));
+                return produtos;
+            }else {
+                return null;
+            }
+            
+        }catch(SQLException ex){
+            System.out.println("Erro ao buscar produtos "+ ex.getMessage());
+            return null;
+        }
     }
+    
+    public ArrayList<ProdutosDTO> listarProdutos(){
+            ArrayList<ProdutosDTO> listagem = new ArrayList<>();
+            try{
+                prep = conn.prepareStatement("SELECT * FROM produtos");
+                resultset = prep.executeQuery();
+                
+                while(resultset.next()){
+                    ProdutosDTO produto = new ProdutosDTO();
+                    produto.setId(resultset.getInt("id"));
+                    produto.setNome(resultset.getString("nome"));
+                    produto.setValor(resultset.getInt("valor"));
+                    produto.setStatus(resultset.getString("status"));
+                    listagem.add(produto);
+                }
+            }catch(SQLException ex){
+                System.out.println("Erro ao listar produtos "+ ex.getMessage());
+            }
+        return listagem;
+        }
     
     public void desconectar(){
         try{
