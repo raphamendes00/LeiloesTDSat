@@ -68,10 +68,47 @@ public class ProdutosDAO {
         }
     }
     
+    public int vender(ProdutosDTO produto){
+        int status;
+        try{
+            prep = conn.prepareStatement("UPDATE produtos SET nome = ?, valor = ?, status = ? WHERE id = ?");
+            prep.setString(1, produto.getNome());
+            prep.setInt(2, produto.getValor());
+            prep.setString(3, "Vendido");
+            prep.setInt(4, produto.getId());
+            status = prep.executeUpdate();
+            return status;
+        }catch(SQLException ex){
+            System.out.println("Venda não realizada "+ ex.getMessage());
+            return ex.getErrorCode();
+        }
+    }
+    
     public ArrayList<ProdutosDTO> listarProdutos(){
             ArrayList<ProdutosDTO> listagem = new ArrayList<>();
             try{
                 prep = conn.prepareStatement("SELECT * FROM produtos");
+                resultset = prep.executeQuery();
+                
+                while(resultset.next()){
+                    ProdutosDTO produto = new ProdutosDTO();
+                    produto.setId(resultset.getInt("id"));
+                    produto.setNome(resultset.getString("nome"));
+                    produto.setValor(resultset.getInt("valor"));
+                    produto.setStatus(resultset.getString("status"));
+                    listagem.add(produto);
+                }
+            }catch(SQLException ex){
+                System.out.println("Erro ao listar produtos "+ ex.getMessage());
+            }
+        return listagem;
+        }
+    
+    public ArrayList<ProdutosDTO> listarProdutosVendidos(){
+            ArrayList<ProdutosDTO> listagem = new ArrayList<>();
+            try{
+                prep = conn.prepareStatement("SELECT * FROM produtos WHERE status = ?");
+                prep.setString(1, "Vendido");
                 resultset = prep.executeQuery();
                 
                 while(resultset.next()){
