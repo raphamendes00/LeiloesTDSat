@@ -137,12 +137,55 @@ public class listagemVIEW extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
-        String id = id_produto_venda.getText();
+        String typedId = id_produto_venda.getText();
+        int selectedId = -1;
         
-        ProdutosDAO produtosdao = new ProdutosDAO();
         
-        //produtosdao.venderProduto(Integer.parseInt(id));
-        listarProdutos();
+        try{
+            selectedId = Integer.parseInt(typedId);
+        }catch(NumberFormatException e){
+            JOptionPane.showMessageDialog(null, "Formato inválido");
+            return;
+        }
+        
+        int selectedRow = -1;
+        
+        for(int i = 0; i < listaProdutos.getRowCount(); i++){
+            int id = (Integer) listaProdutos.getValueAt(i, 0);
+            if(id == selectedId){
+                selectedRow = i;
+                break;
+            }
+        }
+        
+        if (selectedRow >= 0) {
+            int id = (Integer) listaProdutos.getValueAt(selectedRow, 0);
+            String nome = (String) listaProdutos.getValueAt(selectedRow, 1);
+            int valor = (Integer) listaProdutos.getValueAt(selectedRow, 2);
+            String status = (String) listaProdutos.getValueAt(selectedRow, 3);
+
+            ProdutosDTO produto = new ProdutosDTO();
+            produto.setId(id);
+            produto.setNome(nome);
+            produto.setValor(valor);
+            produto.setStatus(status);
+
+            ProdutosDAO produtosDAO = new ProdutosDAO();
+            if (produtosDAO.conectar()) {
+                int result = produtosDAO.vender(produto);
+                if (result > 0) {
+                    JOptionPane.showMessageDialog(null, "Produto vendido com sucesso!");
+                    listarProdutos();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Erro ao vender o produto!");
+                }
+                produtosDAO.desconectar();
+            } else {
+                JOptionPane.showMessageDialog(null, "Erro ao conectar ao banco de dados!");
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "digite um id de um produto da tabela!");
+        }
     }//GEN-LAST:event_btnVenderActionPerformed
 
     private void btnVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVendasActionPerformed
