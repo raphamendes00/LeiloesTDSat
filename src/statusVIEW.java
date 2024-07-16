@@ -1,8 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author Rapha
@@ -14,6 +13,7 @@ public class statusVIEW extends javax.swing.JFrame {
      */
     public statusVIEW() {
         initComponents();
+        listarProdutos();
     }
 
     /**
@@ -32,7 +32,6 @@ public class statusVIEW extends javax.swing.JFrame {
         btnVoltar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(548, 471));
 
         listaProdutos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -66,23 +65,23 @@ public class statusVIEW extends javax.swing.JFrame {
                     .addComponent(btnVoltar)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addGap(68, 68, 68)
+                            .addGap(28, 28, 28)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 528, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addGap(254, 254, 254)
+                            .addGap(183, 183, 183)
                             .addComponent(jLabel1))))
-                .addContainerGap(64, Short.MAX_VALUE))
+                .addContainerGap(46, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(51, 51, 51)
+                .addGap(45, 45, 45)
                 .addComponent(jLabel1)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(51, 51, 51)
+                .addGap(27, 27, 27)
                 .addComponent(btnVoltar)
-                .addContainerGap(74, Short.MAX_VALUE))
+                .addContainerGap(133, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -143,7 +142,36 @@ public class statusVIEW extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable listaProdutos;
     // End of variables declaration//GEN-END:variables
+
+    private void listarProdutos(){
+        try {
+            ProdutosDAO produtosdao = new ProdutosDAO();
+            DefaultTableModel model = (DefaultTableModel) listaProdutos.getModel();
+            model.setNumRows(0);
+            
+            boolean status = produtosdao.conectar();
+            if(status){
+                ArrayList<ProdutosDTO> listagem = produtosdao.listarProdutosVendidos();
+            
+                for(int i = 0; i < listagem.size(); i++){
+                    model.addRow(new Object[]{
+                        listagem.get(i).getId(),
+                        listagem.get(i).getNome(),
+                        listagem.get(i).getValor(),
+                        listagem.get(i).getStatus()
+                    });
+                }
+                produtosdao.desconectar();
+            }else{
+                JOptionPane.showMessageDialog(null, "Erro ao conectar ao banco de dados");
+            }
+            
+            
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    
+    }
 }
